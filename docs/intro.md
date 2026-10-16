@@ -82,3 +82,7 @@ Every platform runs ROS 1 Noetic, apart from `turtlebot3-ros2`, which runs ROS 2
 OpenRoSDE was first published as the Software Development Environment (SDE) of Coarobo GK under the MIT License, which still covers the versions before 3.0.0.
 The archive of those versions remains at [https://gitlab.com/coarobo/SDE](https://gitlab.com/coarobo/SDE).
 OpenRoSDE is now developed on GitHub under the Apache License 2.0, as [License](project/license.md) describes.
+Version 3.0.0, released on 2026-10-16, is the first release on GitHub, and its notes and the changelog of the core list what changed:
+
+- Release notes: [https://github.com/openrosde/openrosde/releases/tag/v3.0.0](https://github.com/openrosde/openrosde/releases/tag/v3.0.0)
+- Changelog: [https://github.com/openrosde/openrosde/blob/main/CHANGELOG.md](https://github.com/openrosde/openrosde/blob/main/CHANGELOG.md)

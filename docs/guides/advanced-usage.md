@@ -22,6 +22,7 @@ Including, but not limited to:
 - `openrosde-initialize-new-container`: Execute several of the functions above to quickly get started when entering a freshly built Docker container.
 - `openrosde-cleanup-output-data`: Delete files and data output at runtime to clean up the environment between experiment trials.
 - `openrosde-kill-ros-nodes`: Kill all ROS nodes as well as [`roscore`](https://wiki.ros.org/roscore) and [`rosmaster`](https://wiki.ros.org/rosmaster) still running in the Docker container.
+- `openrosde-help`: Print how to use the tabs and the panes of the `tmux` sessions, as the first pane of a session shows it, which the section on multiple terminals below describes.
 
 :::note
 
@@ -45,28 +46,35 @@ You can simultaneously run multiple terminals in a [`tmux`](https://github.com/t
 bash ./RUN-TMUX-SESSION.bash #[docker-project] #[session-layout]
 ```
 
-The session gathers the panes that the platform, the active extensions, the setup, and the core declare in `tmux/<name>.panes`, one window per group:
-
-- `robot` for the bringup, RViz, and MoveIt of the platform.
-- `tools` for the FlexBE app, the rqt suite, and the bridges.
-- `user` for the user overlay and a container shell.
-- `host` for a shell on the Ubuntu development machine.
-
+The session gathers the panes that the platform, the active extensions, the setup, and the core declare in `tmux/<name>.panes`, one window per group, which the status bar at the bottom shows as tabs.
 `[session-layout]` selects the panes of a layout, `default-gazebo` by default or `default-realworld` for the real robot.
 
-- Click a pane or a window to select it, and scroll with the wheel, since the session turns the mouse on.
+Every session opens the same standard windows, as tabs numbered from 1 in this order, so that every platform and every setup feels the same, and leaves out a standard window that holds no pane of the layout:
+
+| Window  | What it holds                                                                         | Declared by                                        |
+| ------- | ------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| `robot` | The bringup, visualization, planning, and drivers of the platform and its devices     | The platform, or the setup that replaces its panes |
+| `extra` | Optional processes of a setup or an extension, such as cameras, perception, or a demo | A setup or an extension                            |
+| `tools` | The FlexBE App on ROS 1 or the FlexBE WebUI on ROS 2, the rqt suite, and `rosbridge`  | The core                                           |
+| `user`  | The example of the user overlay and a shell in the container                          | The core                                           |
+| `host`  | A shell on the Ubuntu development machine                                             | The core                                           |
+
+`scripts/load-extension-paths.bash` names the standard windows in `OPENROSDE_TMUX_STANDARD_WINDOWS`.
+A window outside them still opens, after them, with a warning of `RUN-TMUX-SESSION.bash`, while the CI fails on it in every pane file that it checks, so put every pane of a platform, a setup, or an extension in `robot` or `extra`.
+
+The first pane of the session shows the OpenRoSDE wordmark and a short help right before its prompt, and `openrosde-help` prints that help again in any shell of the container, as `bash ./scripts/print-tmux-splash.bash --help` does on the Ubuntu development machine.
+The status bar names OpenRoSDE, the setup, and the layout on the left, holds the tabs in the middle, and points to `openrosde-help` on the right, in a purple accent, or plain when `NO_COLOR` is set.
+The session sets it with options of its own, so the other sessions of `tmux` keep their look and their key bindings.
+
+- Click a tab, or press `Ctrl+b` then its number, to show its window, and press `Ctrl+b` then `n` or `p` for the next or the previous one.
+- Click a pane to focus it, and scroll with the wheel, since the session turns the mouse on.
+- Press `Ctrl+b` then `z` to zoom the focused pane in or out, and `Ctrl+b` then `[` to enter copy mode, which `q` leaves.
 - Press `Ctrl+b` then `d` to detach from the session, which keeps running, and run the same command again to attach to it, from the same machine or over SSH.
-- Run `tmux kill-session -t openrosde-<platform>-<docker-project>` to close the session and every terminal in it.
+- Run `tmux kill-session -t openrosde-<platform>-<docker-project>` on the Ubuntu development machine, such as in the tab `host`, to close the session and every terminal in it.
 
-Each line of a pane file reads `<layouts> <window> <launch-file> [<arg:=value> ...]`, where `<layouts>` is `*` or a comma-separated list, and the words `shell` and `host` open a shell in the container or on the host.
+Each line of a pane file reads `<layouts> <window> <launch-file> [<arg:=value> ...]`, where `<layouts>` is `*` or a comma-separated list, `<window>` is one of the standard windows, and the words `shell` and `host` open a shell in the container or on the host.
 
-:::note
-
-`RUN-TERMINATOR-TERMINAL.bash` still opens the same terminals in [Terminator](https://gnometerminator.blogspot.com/) with the layout stored in `terminator/${OPENROSDE_ROBOT_PLATFORM}.config`, until `tmux` replaces it for good.
-
-:::
-
-Each sub-terminal automatically executes `RUN-DOCKER-CONTAINER.bash` with a predefined ROS launch file for convenience.
+Each pane of a launch file automatically executes `RUN-DOCKER-CONTAINER.bash` with its ROS launch file, and waits for a key before it launches anything.
 You can then select execution options by pressing specific keys, as shown in the example below:
 
 ```shell
@@ -75,6 +83,13 @@ Run 'example_roslaunch_file.launch'? Press:
 'l' to run as local,        # e.g., Gazebo simulation.
 'c' to enter a child shell. # e.g., Bash shell.
 ```
+
+:::note
+
+`RUN-TERMINATOR-TERMINAL.bash` still opens the same terminals in [Terminator](https://gnometerminator.blogspot.com/) with the layout stored in `terminator/${OPENROSDE_ROBOT_PLATFORM}.config` of the platform, whose panes wait for a key the same way, until [#3](https://github.com/openrosde/openrosde/issues/3) removes it.
+The platforms on ROS 2 have no Terminator layout.
+
+:::
 
 ## 🤖 Developing on the Simulator or the Robot
 
@@ -93,10 +108,10 @@ You can continue with one or both of the following options depending on the pres
     remote_mode
     ```
 
-2. You can also conveniently run multiple terminals simultaneously using Terminator by running:
+2. You can also conveniently run multiple terminals simultaneously in the `tmux` session by running:
 
     ```shell
-    bash ./RUN-TERMINATOR-TERMINAL.bash #[docker-project] #[terminator-layout]
+    bash ./RUN-TMUX-SESSION.bash #[docker-project] #[session-layout]
     ```
 
 :::note
@@ -158,21 +173,21 @@ OpenRoSDE uses a two-file configuration system:
 
 Key configuration variables:
 
-| Variable                            | Description                                                                                                                                                                                                         | Default                                                  |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| `OPENROSDE_ROBOT_PLATFORM`          | Target robot platform                                                                                                                                                                                               | `turtlebot3`                                             |
-| `OPENROSDE_CONTAINER_ROOT_DIR`      | OpenRoSDE root path inside the container                                                                                                                                                                            | `/root/OpenRoSDE`                                        |
-| `OPENROSDE_ROBOT_SETUP`             | Active setup, named after its template (see [Extensions](extensions.md))                                                                                                                                            | `turtlebot3`                                             |
-| `OPENROSDE_ROBOT_EXTENSIONS`        | Active extensions in `extensions/`, separated by spaces (see [Extensions](extensions.md))                                                                                                                           | *(empty)*                                                |
-| `OPENROSDE_PLATFORM_REPOSITORY_URL` | Repository of a public platform, with `%s` for its name, which the entry scripts name when the selected platform is cloned nowhere                                                                                  | `https://github.com/openrosde/openrosde-platform-%s.git` |
-| `OPENROSDE_DOCKER_REGISTRY`         | Registry of the base and platform images                                                                                                                                                                            | `ghcr.io/openrosde`                                      |
-| `OPENROSDE_DOCKER_IMAGE_TAG`        | Tag of the base and platform images, `main`, `dev`, or a release such as `v3.0.0` (`auto` derives `main` or `dev` from the branch)                                                                                  | `auto`                                                   |
-| `OPENROSDE_DOCKER_BUILD_FALLBACK`   | Images that `BUILD-DOCKER-IMAGE.bash` builds locally when their pull fails: `true` for the base and platform images, `platform` for the platform image alone, or `false` for neither                                | `true`                                                   |
-| `OPENROSDE_BUILD_JOBS`              | Parallel jobs of `catkin build`, or of `colcon build` on ROS 2, which caps both the packages built at once and their compiler jobs, set in `.env.custom` on a machine short of memory, or by the CI from `JOB_CPUS` | *(empty, every CPU)*                                     |
-| `OPENROSDE_QUIET`                   | Leaves out the list of every `OPENROSDE_*` variable that the entry scripts print with `true`, whose passwords, tokens, and secrets always print as `<redacted>`                                                     | `false`                                                  |
-| `OPENROSDE_ROS_VERSION`             | Version of ROS that the platform runs, `1` or `2`, which a platform on ROS 2 sets in its template (see [ROS 2](ros2.md))                                                                                            | `1`                                                      |
-| `OPENROSDE_ROS_DISTRO`              | Distribution of ROS of the base image of that version, `noetic` or `lyrical`                                                                                                                                        | `noetic`                                                 |
-| `OPENROSDE_ROS_MASTER_HOSTNAME`     | ROS master host name or IP, or on ROS 2 the robot that the discovery reaches as a static peer unless it is `localhost`                                                                                              | `localhost`                                              |
-| `OPENROSDE_ROS_DOMAIN_ID`           | Domain of the nodes on ROS 2, which the robot must share                                                                                                                                                            | `0`                                                      |
-| `OPENROSDE_ROS_CLIENT_IP`           | Ubuntu development machine IP (optional)                                                                                                                                                                            | *(empty)*                                                |
-| `OPENROSDE_ROBOT_HOSTNAME`          | Robot mDNS host name for auto-discovery                                                                                                                                                                             | `turtlebot3.local`                                       |
+| Variable                            | Description                                                                                                                                                                                                                                 | Default                                                  |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `OPENROSDE_ROBOT_PLATFORM`          | Target robot platform                                                                                                                                                                                                                       | `turtlebot3`                                             |
+| `OPENROSDE_CONTAINER_ROOT_DIR`      | OpenRoSDE root path inside the container                                                                                                                                                                                                    | `/root/OpenRoSDE`                                        |
+| `OPENROSDE_ROBOT_SETUP`             | Active setup, named after its template (see [Extensions](extensions.md))                                                                                                                                                                    | `turtlebot3`                                             |
+| `OPENROSDE_ROBOT_EXTENSIONS`        | Active extensions in `extensions/`, separated by spaces (see [Extensions](extensions.md))                                                                                                                                                   | *(empty)*                                                |
+| `OPENROSDE_PLATFORM_REPOSITORY_URL` | Repository of a public platform, with `%s` for its name, which the entry scripts name when the selected platform is cloned nowhere                                                                                                          | `https://github.com/openrosde/openrosde-platform-%s.git` |
+| `OPENROSDE_DOCKER_REGISTRY`         | Registry of the base and platform images                                                                                                                                                                                                    | `ghcr.io/openrosde`                                      |
+| `OPENROSDE_DOCKER_IMAGE_TAG`        | Tag of the base and platform images, `main`, `dev`, or a release such as `v3.0.0` (`auto` derives `main` or `dev` from the branch)                                                                                                          | `auto`                                                   |
+| `OPENROSDE_DOCKER_BUILD_FALLBACK`   | Images that `BUILD-DOCKER-IMAGE.bash` builds locally when their pull fails: `true` for the base and platform images, `platform` for the platform image alone, or `false` for neither                                                        | `true`                                                   |
+| `OPENROSDE_BUILD_JOBS`              | Parallel jobs of `catkin build`, or of `colcon build` on ROS 2, which caps both the packages built at once and their compiler jobs, set in `.env.custom` on a machine short of memory, or by the CI from `JOB_CPUS` when its runner sets it | *(empty, every CPU)*                                     |
+| `OPENROSDE_QUIET`                   | Leaves out the list of every `OPENROSDE_*` variable that the entry scripts print with `true`, whose passwords, tokens, and secrets always print as `<redacted>`                                                                             | `false`                                                  |
+| `OPENROSDE_ROS_VERSION`             | Version of ROS that the platform runs, `1` or `2`, which a platform on ROS 2 sets in its template (see [ROS 2](ros2.md))                                                                                                                    | `1`                                                      |
+| `OPENROSDE_ROS_DISTRO`              | Distribution of ROS of the base image of that version, `noetic` or `lyrical`                                                                                                                                                                | `noetic`                                                 |
+| `OPENROSDE_ROS_MASTER_HOSTNAME`     | ROS master host name or IP, or on ROS 2 the robot that the discovery reaches as a static peer unless it is `localhost`                                                                                                                      | `localhost`                                              |
+| `OPENROSDE_ROS_DOMAIN_ID`           | Domain of the nodes on ROS 2, which the robot must share                                                                                                                                                                                    | `0`                                                      |
+| `OPENROSDE_ROS_CLIENT_IP`           | Ubuntu development machine IP (optional)                                                                                                                                                                                                    | *(empty)*                                                |
+| `OPENROSDE_ROBOT_HOSTNAME`          | Robot mDNS host name for auto-discovery                                                                                                                                                                                                     | `turtlebot3.local`                                       |

@@ -28,7 +28,9 @@ bash ./SWITCH-ROBOT-PLATFORM.bash turtlebot3
 bash ./BUILD-DOCKER-IMAGE.bash
 bash ./RUN-DOCKER-CONTAINER.bash
 # Once, inside the container:
-openrosde-initialize-new-container`;
+openrosde-initialize-new-container
+# Back on the host, after Ctrl+d:
+bash ./RUN-TMUX-SESSION.bash`;
 
 type Layer = {tag: string; name: string; body: ReactNode};
 
@@ -96,8 +98,8 @@ const FEATURES: Feature[] = [
     title: 'User Overlay',
     body: (
       <>
-        Add your own ROS packages, system dependencies, environment variables, and panes on top of
-        any platform, without forking OpenRoSDE.
+        Add your own ROS packages, system dependencies, and environment variables on top of any
+        platform, without forking OpenRoSDE.
       </>
     ),
     to: '/docs/guides/user-overlay',
@@ -130,7 +132,8 @@ const FEATURES: Feature[] = [
     body: (
       <>
         One <code>tmux</code> session gathers the panes of the platform, the extensions, the setup,
-        and the core, in simulation or on the real robot.
+        and the core in the same standard tabs on every platform, in simulation or on the real
+        robot.
       </>
     ),
     to: '/docs/guides/advanced-usage',

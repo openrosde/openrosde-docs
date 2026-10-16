@@ -64,7 +64,9 @@ This ensures that all the contributors work in the exact same software environme
     bash ./RUN-TMUX-SESSION.bash
     ```
 
-    The Terminator layout of earlier releases still opens with `bash ./RUN-TERMINATOR-TERMINAL.bash`.
+    The session opens its tabs in the same standard order on every platform, `robot`, `extra`, `tools`, `user`, and `host`, and leaves out a tab with no pane.
+    Its first pane shows how to use its tabs and panes, which `openrosde-help` prints again in any shell of the container.
+    The Terminator layout of earlier releases still opens with `bash ./RUN-TERMINATOR-TERMINAL.bash`, until [#3](https://github.com/openrosde/openrosde/issues/3) removes it.
 
 :::note
 

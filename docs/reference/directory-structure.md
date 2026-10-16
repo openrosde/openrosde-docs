@@ -29,10 +29,11 @@ scripts/
   load-openrosde-env.bash                # Shared environment loader.
   load-extension-paths.bash              # Resolves the files of the platform and the extensions.
   build-extension-layers.bash            # Builds the Docker layers of the active extensions.
-  generate-mesh-glbs.bash                # Gives the meshes of the workspaces their GLB files.
-  update-git-submodules.bash             # Updates the Git submodules of the core and of every clone, and applies their patches.
   list-robot-platforms.bash              # Lists the platforms found by name.
   list-robot-setups.bash                 # Lists the setups found by name.
+  update-git-submodules.bash             # Updates the Git submodules of the core and the extensions, and applies their patches.
+  generate-mesh-glbs.bash                # Gives every robot mesh of the workspaces its GLB file.
+  print-tmux-splash.bash                 # Prints the splash and the help of the 'tmux' sessions.
   <platform>/                            # Optional platform scripts (shell, bringup, Chrony).
 docker/
   docker-compose.yaml                    # Docker service definitions.
@@ -41,10 +42,14 @@ docker/
   docker-compose-wsl.yaml                # GPU overlay for WSL 2 support.
   openrosde-base/                        # Shared base Docker image of ROS 1.
     Dockerfile
+    patches/                             # Patches of the file service of ROS#.
     scripts/                             # Container helper scripts, shared by both base images.
   openrosde-base-ros2/                   # Shared base Docker image of ROS 2.
     Dockerfile
+    patches/                             # Patches of the file service of ROS# on ROS 2.
   openrosde-mesh2glb/                    # Converter image of the robot meshes into GLB files.
+    Dockerfile
+    scripts/                             # Converter scripts.
   user-devel/                            # User overlay image (Layer 3, runtime container).
     Dockerfile
 ros/
@@ -66,7 +71,8 @@ tmux/
 patches/                                 # Submodule patch files.
 extensions/                              # Extensions cloned from their own repositories (ignored by Git), such as 'openrosde-platform-<platform>/'.
 tests/                                   # Test suites of the scripts, run by 'tests/run.bash'.
-gitlab-ci/                               # Scripts of the CI, which the GitHub Actions workflows run.
+gitlab-ci/                               # Scripts of the CI, which the workflows of GitHub Actions run, in a folder named after the GitLab CI of the archive.
+.github/                                 # GitHub Actions workflows, their composite actions, and their scripts.
 ```
 
 ## 📖 Documentation of the Core
