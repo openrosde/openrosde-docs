@@ -57,6 +57,13 @@
   background: var(--openrosde-accent);
 }
 
+.heroLogo {
+  display: block;
+  width: 88px;
+  height: auto;
+  margin-bottom: 1.4rem;
+}
+
 .heroTitle {
   font-size: clamp(2.1rem, 3.8vw, 3.05rem);
   line-height: 1.1;

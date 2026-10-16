@@ -21,6 +21,7 @@ const config: Config = {
   },
 
   url: 'https://openrosde.org',
+  favicon: 'img/favicon.ico',
   baseUrl: '/',
 
   organizationName: 'openrosde',
@@ -51,6 +52,7 @@ const config: Config = {
   ],
 
   headTags: [
+    {tagName: 'link', attributes: {rel: 'apple-touch-icon', href: '/img/apple-touch-icon.png'}},
     {tagName: 'link', attributes: {rel: 'preconnect', href: 'https://fonts.googleapis.com'}},
     {
       tagName: 'link',
@@ -107,8 +109,14 @@ const config: Config = {
     mermaid: {
       theme: {light: 'neutral', dark: 'dark'},
     },
+    // The card that a link to the site shows on social networks and in chats, with the logo chosen on 2026-10-16.
+    image: 'img/openrosde-social-card.png',
     navbar: {
       title: 'OpenRoSDE',
+      logo: {
+        alt: 'OpenRoSDE logo',
+        src: 'img/logo.svg',
+      },
       hideOnScroll: false,
       items: [
         {type: 'docSidebar', sidebarId: 'docsSidebar', position: 'left', label: 'Documentation'},
@@ -126,6 +134,13 @@ const config: Config = {
     },
     footer: {
       style: 'dark',
+      logo: {
+        alt: 'OpenRoSDE logo',
+        src: 'img/logo.svg',
+        href: 'https://openrosde.org',
+        width: 48,
+        height: 48,
+      },
       links: [
         {
           title: 'Documentation',
