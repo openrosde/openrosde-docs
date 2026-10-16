@@ -4,6 +4,7 @@ import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 import CodeBlock from '@theme/CodeBlock';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 import styles from './index.module.css';
 
@@ -229,10 +230,12 @@ function HeroLinks(): ReactNode {
 }
 
 function Hero(): ReactNode {
+  const logoUrl = useBaseUrl('/img/logo.svg');
   return (
     <header className={styles.hero}>
       <div className={clsx('container', styles.heroInner)}>
         <div className={styles.heroText}>
+          <img className={styles.heroLogo} src={logoUrl} alt="OpenRoSDE logo" width={88} height={93} />
           <div className={styles.eyebrow}>
             <span className={styles.eyebrowItem}>Docker</span>
             <span className={styles.eyebrowDot} />
