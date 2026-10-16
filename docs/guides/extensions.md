@@ -7,7 +7,7 @@ description: Add a robot platform, a device, or other packages to OpenRoSDE from
 # Extensions
 
 An **extension** is a Git repository cloned into `extensions/<extension>/` that adds a robot platform, a device, or any other package to OpenRoSDE without forking it.
-Extensions keep OpenRoSDE a platform-agnostic core, with everything specific to a robot or a product around it.
+Extensions keep OpenRoSDE a platform-agnostic core, with everything specific to a robot or a product around it, as the [OpenRoSDE Split](https://github.com/openrosde/openrosde/blob/main/AGENTS.md#openrosde-split) describes.
 
 A private extension, cloned from a private repository of a company or a lab, works exactly as a public one.
 OpenRoSDE never needs to know where an extension comes from.
@@ -47,7 +47,7 @@ extensions/<extension>/
   ros/<name>_catkin_ws/src/              # One or more Catkin workspaces, for a platform on ROS 1.
   ros2/<name>_colcon_ws/src/             # One or more colcon workspaces, for a platform on ROS 2, as 'docs/ros2.md' describes.
   scripts/<platform>/                    # Optional platform scripts (shell, bringup, Chrony), as for the core.
-  tmux/<name>.panes                      # Panes of the 'tmux' session, in windows of their own.
+  tmux/<name>.panes                      # Panes of the 'tmux' session, in its standard windows 'robot' and 'extra'.
   terminator/<platform>.config           # Terminator layouts of the platform, until 'tmux' replaces them (platforms only).
   patches/                               # Patches of the Git submodules of this extension.
   ci/check-in-container.bash             # Checks that the CI runs in the container of every setup that activates the extension (optional).
@@ -108,6 +108,7 @@ extensions/<extension>/
 - A platform on ROS 2 takes the colcon workspaces of `ros2/` in the same order, from `ros2/openrosde_colcon_ws` to `ros2/user_colcon_ws`, and its sessions open the panes of the core of `tmux/openrosde-ros2.panes`, as [ROS 2](ros2.md) describes.
 - `RUN-DOCKER-CONTAINER.bash` adds the overlay of the platform, then every `docker/docker-compose*.yaml` of the active folders, apart from those named after a platform or a setup that is not active.
 - `RUN-TMUX-SESSION.bash` opens the panes of the setup, or else of the platform, whose own `tmux/<platform>.panes` the panes of the setup replace, then those of every `tmux/*.panes` of the active folders, apart from those named after a platform or a setup that is not active, then those of the core, and a setup can declare a layout of its own, such as `lab-demo`, for its demo.
+- Every pane opens in one of the standard windows of the `tmux` sessions, in the order `robot`, `extra`, `tools`, `user`, `host`, whatever part declares it: `robot` for the bringup, visualization, planning, and drivers of the platform and its devices, and `extra` for the optional processes of a setup or an extension, such as cameras, perception, or a demo, while `tools`, `user`, and `host` belong to the core, as [Advanced Usage](advanced-usage.md) describes.
 - `BUILD-DOCKER-IMAGE.bash` builds the image of the platform from the folder that holds the platform, so that the `COPY` instructions of its `docker/<platform>-devel/Dockerfile` read from there, as those of a layer do.
 - `BUILD-DOCKER-IMAGE.bash` builds every `docker/<name>-devel/Dockerfile` of the active extensions whose `<name>` is not a platform, each on top of the previous one, between the platform image and the user overlay, as the section on Docker layers below shows.
 - `bash ./scripts/update-git-submodules.bash` updates the Git submodules of the core and of every cloned extension, and applies the `patches/` of each repository and of each part to its own submodules.
@@ -208,7 +209,7 @@ openrosde-base  ->  <platform>-devel  ->  <device>-devel  ->  <extension>-devel 
 - Each layer is tagged `openrosde-local/<setup>/<name>-devel:latest`, and the user overlay `openrosde-local/<setup>/user-devel:latest`, rather than with the name of the registry.
   A name without a registry host points to Docker Hub, where a repository has a namespace and a name without `/`, so no repository of three components can exist there, and a `docker push` of a private layer fails with `push access denied` rather than publishing it.
   Two setups that share a device also never overwrite the layer of each other.
-- A CI job builds the layers of a setup with the same script in its Docker-in-Docker daemon, on top of the platform image that it pulls, and pushes none of them, as the CI of OpenRoSDE does for every setup it tests.
+- A CI job builds the layers of a setup with the same script, on top of the platform image that it pulls, and pushes none of them, as the CI of OpenRoSDE does for every setup it tests.
 
 ## 🚀 Using an Extension
 
@@ -249,6 +250,7 @@ openrosde-base  ->  <platform>-devel  ->  <device>-devel  ->  <extension>-devel 
 ## 🤖 Canonical Platforms
 
 The canonical platforms of OpenRoSDE live in public repositories of their own, under the Apache License 2.0, each with the layout of the core, as [Platforms & Devices](../platforms.md) lists.
+
 Clone one into `extensions/`, then switch to it, as for any platform extension:
 
 ```shell
@@ -256,14 +258,14 @@ git clone https://github.com/openrosde/openrosde-platform-fetch.git extensions/o
 bash ./SWITCH-ROBOT-PLATFORM.bash fetch
 ```
 
-- `gitlab-ci/extensions.repos` pins each of them at a commit of its `main`, so the CI of the core clones them, builds or reuses their images, and publishes them as `ghcr.io/openrosde/<platform>-devel`, as it did when the core held them.
-- Each platform repository tests its own changes against the core, as the section below describes, and a pull request of the core moves the pin once a change of the platform is merged.
+- `gitlab-ci/extensions.repos` pins each of them at a commit of its `main`, so the CI of the core clones them, builds or reuses their images, and publishes them as `ghcr.io/openrosde/<platform>-devel`.
+- Each platform repository tests its own changes with its workflow `.github/workflows/test-with-openrosde.yml`, which [Testing a Public Extension](#-testing-a-public-extension) describes, and a pull request of the core moves the pin once a change of the platform is merged.
 - The `NOTICE` of each platform repository records the licenses of its third-party software, some of which allow no commercial use.
 - The UR5e in `openrosde-platform-ur5e` is the plain robot as sold, and a setup that mounts a gripper or cameras on it names its own description package in `OPENROSDE_UR5E_DESCRIPTION_PACKAGE`, as `docs/robot-platforms/ur5e.md` of that repository describes.
 
 ## 🧪 Testing an Extension
 
-The CI of OpenRoSDE tests every setup it finds, in the core and in the public extensions that `gitlab-ci/extensions.repos` pins, in the format of `vcstool`:
+The CI of OpenRoSDE runs on GitHub Actions, as the section [GitHub Actions](#-github-actions) describes, and tests every setup it finds, in the core and in the public extensions that `gitlab-ci/extensions.repos` pins, in the format of `vcstool`:
 
 ```yaml
 repositories:
@@ -276,7 +278,7 @@ repositories:
 Keep that layout, with each name indented by two spaces and its keys by four, since `gitlab-ci/clone-extensions.bash` refuses any other rather than testing nothing.
 Update a `version` by hand, and never write the file with `vcs export` of the whole `extensions/` folder, which would add every clone of the checkout, private ones included.
 
-- The generate job and every other job clone these repositories with `gitlab-ci/clone-extensions.bash`, anonymously over HTTPS, and never with a token of the job, so a pipeline of OpenRoSDE, which anyone can read, never reaches a private repository.
+- The generate job and every other job clone these repositories with `gitlab-ci/clone-extensions.bash`, anonymously over HTTPS, and never with a token of the job, so a run of OpenRoSDE, which anyone can read, never reaches a private repository.
 - The image job of a platform builds its image from the folder that holds it, and reuses an image whose folders hash the same, each folder hashed in the Git repository that holds it.
 - The test job of a setup selects the setup as `bash ./SWITCH-ROBOT-SETUP.bash <setup>` does, builds its Docker layers and its Catkin workspaces in the image of its platform, then disconnects the container from every network before any check runs.
 - It then checks that every launch entry point of the panes of the setup resolves with `roslaunch --files`, and that no two panes of one layout start a node of the same name with `roslaunch --nodes`, both of which start no node, and fails when neither the setup nor its platform has a pane file.
@@ -301,17 +303,63 @@ It lets a script of `ci/` start only the launch files of simulations that `ci/al
 
 :::
 
-A public extension tests one of its branches against the core with a job that triggers a pipeline of OpenRoSDE on `dev`, once `gitlab-ci/extensions.repos` lists it, as [`docs/extensions.md`](https://github.com/openrosde/openrosde/blob/main/docs/extensions.md) of the core shows.
-
-- That pipeline checks out the commit of the branch in place of the pinned version, then tests only the setups that activate the extension, with their platforms, and never publishes its images.
-- A device that no setup of OpenRoSDE lists yet also sets `OPENROSDE_CI_EXTRA_EXTENSIONS` to its name, which adds it to every setup.
-- A pipeline of a fork cannot trigger one of OpenRoSDE.
-
-A private extension runs the same scripts in a pipeline of its own, in a private project, with OpenRoSDE checked out at the version it pins, since OpenRoSDE never clones a private repository.
+A private extension runs the same scripts in a CI of its own, in a private repository, with OpenRoSDE checked out at the version it pins, since OpenRoSDE never clones a private repository.
 It reads the public base and platform images by setting `OPENROSDE_CI_IMAGE_REGISTRY` to `ghcr.io/openrosde` and `OPENROSDE_CI_IMAGE_TAG` to the tag of that version, `dev` or a release such as `v3.0.0`, and keeps its own images in its own registry.
-Both are needed, since the default tag, `pipeline-<id>` with the ID of the running pipeline, names only the images that a pipeline of OpenRoSDE pushes for itself.
+Both are needed, since `gitlab-ci/test-catkin-workspaces.bash` names no image without them, and the workflows of OpenRoSDE set them to the images of their own run, `pipeline-<run-id>`.
 It may instead pass the image to `gitlab-ci/test-catkin-workspaces.bash` as its second argument, such as `ghcr.io/openrosde/ur5e-devel:v3.0.0`.
 Outside the CI, the script refuses to replace an existing `.env.custom`, so move it aside before running the script by hand.
+
+## 🐙 GitHub Actions
+
+The workflows of `.github/workflows/` run the scripts of `gitlab-ci/`, a folder named after the GitLab CI that ran the versions before 3.0.0, which [#13](https://github.com/openrosde/openrosde/issues/13) renames, and keep the names that those scripts give the jobs.
+
+| Workflow        | Runs on                                                                                                                                             | What it does                                                                                                          |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `checks.yml`    | Every pull request, forks included, and every run of `ci.yml`                                                                                       | ShellCheck, actionlint, the test suites of `tests/`, `check-scripts-job`, and `generate-pipeline-job`, with no secret |
+| `ci.yml`        | Every push to `dev` or `main` and every release tag `vX.Y.Z` of `openrosde/openrosde` that changes something that goes into an image or a workspace | The image jobs, `check-mesh-glbs-job`, one test job per setup and for the core alone, and `publish-images-job`        |
+| `extension.yml` | The workflow of an extension that calls it                                                                                                          | `check-scripts-job`, `check-mesh-glbs-job`, and the test jobs of the setups that activate the extension               |
+
+- `generate-pipeline-job` lists the jobs with `gitlab-ci/generate-ci-pipeline.bash`, which prints them as a GitLab child pipeline whose jobs extend those of `gitlab-ci/openrosde-pipeline.yml`, and `.github/scripts/print-ci-matrices.bash` turns them into the matrices of the workflows.
+- `ci.yml` pushes its images to `ghcr.io/openrosde` as `pipeline-<run-id>`, reuses an image whose sources hash the same, and publishes them as `dev`, `main`, or `vX.Y.Z` once every image job and every test has passed.
+- Only its image jobs and its publish job may write packages, and they run only on a push to `openrosde/openrosde`, so a pull request builds no image and its workspaces are tested once it is merged into `dev`.
+- `OPENROSDE_CI_REGISTRY_IMAGE` names the registry in one place at the top of `ci.yml`.
+- The jobs that build or pull the base images free disk space first with `.github/actions/free-disk-space`, since a hosted runner has little room for them.
+
+### 🔁 Testing a Public Extension
+
+A public extension tests its pull requests and its branch `main` against the core with a workflow of its own, `.github/workflows/test-with-openrosde.yml`, that calls `extension.yml`, as every platform and every device of OpenRoSDE does:
+
+```yaml
+name: Test with OpenRoSDE
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-with-openrosde-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  openrosde:
+    uses: openrosde/openrosde/.github/workflows/extension.yml@dev
+    with:
+      core-ref: dev
+```
+
+- The workflow checks out the core at `core-ref`, clones the extensions of `gitlab-ci/extensions.repos`, and checks out the commit under test in place of the pinned clone, which works for a fork, a pull request, and an extension that the file does not list.
+- It tests only the setups that activate the extension, and a device that no setup lists yet passes `extra-extensions: openrosde-device-<driver>` to add it to every setup.
+- `setups` keeps the test jobs of the setups it names, separated by spaces, such as `ur5e` for a device of ROS 1 that `extra-extensions` adds to every setup, so that the device is never built on a setup of ROS 2, and the workflow fails when none of them activates the extension.
+- It runs in the repository that calls it, which cannot push to the registry of the core, so each test job builds the image of its platform locally on the published images of `core-ref`, with the published image of that platform as its cache, and it publishes nothing.
+- Keep `core-ref` on the version after the `@`, since the workflow runs the scripts of the core that it checks out.
+- Its other inputs name the folder of the extension when it differs from the name of the repository (`extension-name`), the core (`core-repository`), and the published images (`image-registry`, `image-tag`).
+- `workflow_dispatch` lets a maintainer run the workflow again by hand, such as after a change of the core.
 
 ## ⚙️ Configuration
 
@@ -330,4 +378,5 @@ Set `OPENROSDE_DOCKER_REGISTRY` in `.env.custom` to use a registry of your own.
 
 ## 🛣️ What Comes Next
 
-Terminator leaves OpenRoSDE once the `tmux` sessions have run on a real robot, which closes [#38](https://github.com/openrosde/openrosde/issues/38).
+- Terminator leaves OpenRoSDE with [#3](https://github.com/openrosde/openrosde/issues/3), now that the `tmux` sessions have run on a real robot, together with `RUN-TERMINATOR-TERMINAL.bash`, the `terminator/` layouts of the platforms, and the checks of `tests/suites/test-terminator-parity.bash`.
+- The folder `gitlab-ci/` takes a neutral name with [#13](https://github.com/openrosde/openrosde/issues/13), which also removes what only GitLab CI used, so an extension that calls its scripts updates their paths then.

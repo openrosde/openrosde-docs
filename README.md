@@ -50,14 +50,14 @@ The settings of the repository must select GitHub Actions as the source of GitHu
 
 ## ✍️ Writing Guidelines
 
-- Keep each page faithful to the document of the core it comes from, as the Directory Structure page lists.
+- Keep each page faithful to the document of the core it comes from, as the Directory Structure page lists, and change the document of the core first, so that the site and the core never contradict each other.
 - Mark anything not yet implemented as in progress or planned, and never describe a feature the core does not have.
 - Write one sentence per line, so that every change reads as a clean diff.
 - Use "OpenRoSDE" for the project and "Apache-2.0" for the license.
 - Put code identifiers, such as file names, commands, and variables, in backticks.
 - Avoid em dashes, en dashes, and semicolons in prose.
 - Use Docusaurus admonitions such as `:::note` in `docs/`, since a GitHub alert such as `> [!NOTE]` shows as a plain quote on the site.
-- Keep the site free of a logo and a favicon until the logo of OpenRoSDE is chosen.
+- Keep `static/img/logo.svg` a copy of `profile/assets/openrosde-logo.svg` of [https://github.com/openrosde/.github](https://github.com/openrosde/.github), which holds the source of the logo.
 
 ## ⚖️ License
 

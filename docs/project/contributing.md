@@ -40,7 +40,7 @@ The project is hosted at [https://github.com/openrosde/openrosde](https://github
 
 - **Title**: Conventional Commits format `type(scope): subject`.
   Allowed types: `feat`, `fix`, `docs`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
-  Omit the scope, since the core holds no platform, and every platform takes its changes in its own repository.
+  Omit the scope, since the core holds no platform, and every platform takes its changes in its own repository, apart from `chore(release): vX.Y.Z` of a release.
   Subject is imperative, lowercase, no trailing period.
   Example: `docs: adopt Keep a Changelog and document the GitHub workflow`.
 - **Description**: use the following structure.
@@ -120,13 +120,13 @@ Release procedure (per release):
 
 Please report bugs or request features using the [GitHub issue tracker](https://github.com/openrosde/openrosde/issues).
 Include the platform name, host OS, and the output of the failing command.
-Report a security vulnerability privately, as the [security policy](https://github.com/openrosde/.github/blob/main/SECURITY.md) of the organization describes, and never in a public issue.
+Report a security vulnerability privately, with **Report a vulnerability** in the **Security** tab of the repository, as the [security policy](https://github.com/openrosde/.github/blob/main/SECURITY.md) of the organization describes, and never in a public issue.
 
 ## 🤖 Adding a New Robot Platform {/* #adding-a-new-robot-platform */}
 
 :::note
 
-If you only need to add your own ROS packages, system dependencies, environment variables, or Terminator panes, **do not add a new platform**.
+If you only need to add your own ROS packages, system dependencies, or environment variables, **do not add a new platform**.
 Use the [User Overlay](../guides/user-overlay.md) (Layer 3) instead.
 It lives in [`docker/user-devel/Dockerfile`](https://github.com/openrosde/openrosde/blob/main/docker/user-devel/Dockerfile), [`ros/user_catkin_ws/`](https://github.com/openrosde/openrosde/tree/main/ros/user_catkin_ws), and [`docker/docker-compose-user.yaml`](https://github.com/openrosde/openrosde/blob/main/docker/docker-compose-user.yaml), and works on top of any selected `OPENROSDE_ROBOT_PLATFORM` without any of the steps below.
 
@@ -165,14 +165,15 @@ cd extensions/openrosde-platform-<platform>
 Copy the repository files of the closest platform, then adapt them to your platform:
 
 ```shell
-cp ../openrosde-platform-cobotta/{LICENSE,NOTICE,README.md,.gitignore,.gitlab-ci.yml} .
+cp ../openrosde-platform-cobotta/{LICENSE,NOTICE,README.md,.gitignore} .
+mkdir -p .github/workflows && cp ../openrosde-platform-cobotta/.github/workflows/test-with-openrosde.yml .github/workflows/
 ```
 
 - `LICENSE`: the Apache License 2.0 of the public platforms, or the license of your choice.
 - `NOTICE`: the copyright line of the platform and the notices of the third-party software it fetches or its image installs.
-- `README.md`: what the platform holds, how to clone it, how the CI tests it, and its third-party software.
+- `README.md`: what the platform holds, how to clone it, how the CI tests it, and its third-party software, in the structure that every platform repository shares.
 - `.gitignore`: the files that `catkin build` creates in the workspace, which the `.gitignore` of the core does not reach.
-- `.gitlab-ci.yml`: the trigger of the pipeline of the core, for a public platform that `gitlab-ci/extensions.repos` lists.
+- `.github/workflows/test-with-openrosde.yml`: the workflow that tests the platform with the core on every push to `main` and every pull request, through the reusable workflow `extension.yml` of the core, as [Testing an Extension](../guides/extensions.md#-testing-an-extension) describes.
 
 The commands of the steps below run in the folder of the platform repository.
 
@@ -265,8 +266,10 @@ default-gazebo     robot  <platform>_rviz_default.launch
 default-realworld  robot  <platform>_bringup_default_realworld.launch
 ```
 
-The core adds its own windows (`tools`, `user`, `host`) from `tmux/openrosde.panes`.
-Until `tmux` replaces Terminator, also create the matching Terminator layout, `terminator/<platform>.config`, by copying the closest existing config:
+Put every pane of the platform in the standard window `robot`, which holds its bringup, visualization, planning, and drivers, and leave the standard window `extra` to the optional processes of a setup or an extension, such as cameras or a demo.
+The core adds its own windows `tools`, `user`, and `host` from `tmux/openrosde.panes`, and every session opens the standard windows in the order `robot`, `extra`, `tools`, `user`, `host`, whatever order the pane files declare them in, as [Advanced Usage](../guides/advanced-usage.md) describes.
+`gitlab-ci/check-launch-files.bash` fails on a pane in any other window.
+Until [#3](https://github.com/openrosde/openrosde/issues/3) removes Terminator, also create the matching Terminator layout, `terminator/<platform>.config`, by copying the closest existing config:
 
 ```shell
 mkdir -p terminator && cp ../openrosde-platform-cobotta/terminator/cobotta.config terminator/<platform>.config
@@ -308,10 +311,10 @@ The launch package of the platform is always `openrosde_<platform>_launch`, so i
 The scripts and the CI pipeline find the platform by name, so a private platform needs nothing in the core.
 A public platform is listed in the core, in a pull request of the core, so that its CI tests it and publishes its image:
 
-| File                         | What to add                                                                                      |
-| ---------------------------- | ------------------------------------------------------------------------------------------------ |
-| `gitlab-ci/extensions.repos` | The repository, with an anonymous HTTPS URL, pinned at a commit or a tag of its `main`           |
-| `README.md`                  | The platform table, with the URL of the repository, and the third-party table, with its `NOTICE` |
+| File                         | What to add                                                                                                                         |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `gitlab-ci/extensions.repos` | The repository, with an anonymous HTTPS URL, pinned at a commit or a tag of its `main`, which the workflows of GitHub Actions clone |
+| `README.md`                  | The platform table, with the URL of the repository, and the third-party table, with its `NOTICE`                                    |
 
 ### Step 11: Test
 

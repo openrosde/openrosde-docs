@@ -1,22 +1,22 @@
 ---
 sidebar_label: User Overlay
 sidebar_position: 2
-description: Add your own ROS packages, Docker layer, environment variables, and panes to OpenRoSDE without forking it.
+description: Add your own ROS packages, Docker layer, and environment variables to OpenRoSDE without forking it.
 ---
 
 # User Overlay
 
 The **user overlay** is Layer 3 of the OpenRoSDE image stack:
 
-- **Layer 1**: `openrosde-base`, the shared Ubuntu 20.04, ROS Noetic, Gazebo, and FlexBE toolchain, built once and shared by all platforms.
-- **Layer 2**: `<platform>-devel`, the robot-specific packages for the platform selected by `OPENROSDE_ROBOT_PLATFORM`, pulled from the registry.
-- **Layer 3**: `user-devel`, your customization layer, always built locally on top of Layer 2.
+- **Layer 1**, `openrosde-base`: shared Ubuntu 20.04, ROS Noetic, Gazebo, and FlexBE toolchain, built once and shared by all platforms, or `openrosde-base-ros2` for a platform on ROS 2, as [ROS 2](ros2.md) describes.
+- **Layer 2**, `<platform>-devel`: robot-specific packages for the platform selected by `OPENROSDE_ROBOT_PLATFORM`, pulled from the registry.
+- **Layer 3**, `user-devel`: your customization layer, always built locally on top of Layer 2, or on top of the last Docker layer of the active extensions, as [Extensions](extensions.md) describes.
 
 ```
 openrosde-base (L1)  ->  <platform>-devel (L2)  ->  user-devel (L3, this layer)
 ```
 
-It lets you add your own ROS packages, system dependencies, environment variables, and Terminator panes without forking OpenRoSDE or touching any platform files.
+It lets you add your own ROS packages, system dependencies, and environment variables without forking OpenRoSDE or touching any platform files, and the tab `user` of every `tmux` session runs its starter.
 
 The user overlay is platform-agnostic: the same overlay rebuilds on top of whichever `OPENROSDE_ROBOT_PLATFORM` you currently have selected.
 
@@ -42,7 +42,7 @@ bash ./BUILD-DOCKER-IMAGE.bash local
 bash ./RUN-DOCKER-CONTAINER.bash
 ```
 
-Inside the container, build all three workspaces:
+Inside the container, build the workspaces of the core, the platform, the active extensions, and the user overlay:
 
 ```shell
 openrosde-reset-catkin-workspaces
@@ -55,17 +55,20 @@ rospack find openrosde_user_launch
 roslaunch openrosde_user_launch user_example_default.launch
 ```
 
-To run your user-overlay launches alongside the full platform stack, use the standard platform Terminator layout:
+To run your user-overlay launches alongside the full platform stack, open the `tmux` session of the platform from the Ubuntu development machine:
 
 ```shell
-bash ./RUN-TERMINATOR-TERMINAL.bash
+bash ./RUN-TMUX-SESSION.bash
 ```
 
-Number 13 (`terminal26`) of every platform layout is pre-wired to `openrosde_user_launch:user_example_default.launch`, so the starter launch runs automatically.
-The other spare panes (Numbers 8 to 12) are free shells where you can run any additional user-overlay command.
-To replace the pre-wired entry, edit your platform's `terminator/<platform>.config` and update the `command =` line under `[[[terminal26]]]`.
+Its tab `user` runs `openrosde_user_launch:user_example_default.launch`, or `user_example_default.launch.xml` on ROS 2, beside a shell in the container, from the panes of the core in `tmux/openrosde.panes` or `tmux/openrosde-ros2.panes`, as [Advanced Usage](advanced-usage.md) describes.
+Each pane waits for a key before it launches, so the starter runs only when you ask for it.
 
-In the FlexBE App, load and execute `User Example Behavior` to confirm the FlexBE setup.
+Until [#3](https://github.com/openrosde/openrosde/issues/3) removes Terminator, the Terminator layout of the platform still opens with `bash ./RUN-TERMINATOR-TERMINAL.bash`.
+Number 12 (`terminal25`) of every platform layout is pre-wired to `openrosde_user_launch:user_example_default.launch`, and the spare panes, Numbers 8 to 11, are free shells where you can run any additional user-overlay command.
+To replace the pre-wired entry, edit the `terminator/<platform>.config` of the platform and update the `command =` line under `[[[terminal25]]]`.
+
+In the FlexBE App on ROS 1, which the tab `tools` starts, load and execute `User Example Behavior` to confirm the FlexBE setup.
 
 ## ➕ Adding Your Own ROS Package
 
@@ -80,7 +83,7 @@ In the FlexBE App, load and execute `User Example Behavior` to confirm the FlexB
 3. Source the new package and run it:
 
     ```shell
-    source ${OPENROSDE_CONTAINER_ROOT_DIR}/ros/user_catkin_ws/devel/setup.bash
+    source "${OPENROSDE_CONTAINER_ROOT_DIR}/ros/user_catkin_ws/devel/setup.bash"
     rosrun <your_package> <your_node>
     ```
 
@@ -128,10 +131,10 @@ The user workspace is automatically:
 |                | User overlay                                                                                 | New platform                                                                                                   |
 | -------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | Use case       | Project-specific or personal customization                                                   | Upstream contribution adding support for a new robot                                                           |
-| Where it lives | Local fork or branch, not pushed to `openrosde/openrosde`                                    | A repository of its own, which a pull request of `openrosde/openrosde` lists once it is public                 |
+| Where it lives | Your clone of OpenRoSDE, never pushed to `openrosde/openrosde`                               | A repository of its own, `openrosde-platform-<platform>`, listed in the core by a pull request into `dev`      |
 | Files touched  | This page only                                                                               | The step-by-step list in [Contributing](../project/contributing.md#adding-a-new-robot-platform)                |
-| CI             | None (built locally)                                                                         | Full CI matrix                                                                                                 |
+| CI/CD          | None (built locally)                                                                         | The CI of the core, and the workflow `test-with-openrosde.yml` of the platform repository                      |
 | Image registry | Local-only (`openrosde-local/<setup>/user-devel:latest`, which no `docker push` can publish) | Published by the CI to `ghcr.io/openrosde/<platform>-devel` as `main` and `dev`, and as `vX.Y.Z` for a release |
 
 If you need anything beyond the user overlay (custom Gazebo worlds for an existing platform, additional FlexBE behaviors, etc.), keep it in the user overlay first.
-Only promote it to a platform package or a new platform when it stabilizes and is ready to be shared upstream.
+Promote it to a platform package or a new platform only when it stabilizes and is ready to be shared upstream.
