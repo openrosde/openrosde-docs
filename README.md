@@ -9,7 +9,7 @@
   <a href="https://docusaurus.io/"><img src="https://img.shields.io/badge/Docusaurus-3.10.1-3ECC5F?logo=docusaurus&logoColor=white" alt="Docusaurus 3.10.1"></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-%E2%89%A520-5FA04E?logo=nodedotjs&logoColor=white" alt="Node.js 20 or later"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-2E5C8A" alt="License: Apache-2.0"></a>
-  <a href="https://openrosde.org/"><img src="https://img.shields.io/badge/website-openrosde.org-4F46E5" alt="Website: openrosde.org"></a>
+  <a href="https://openrosde.org/"><img src="https://img.shields.io/badge/website-openrosde.org-5E5FC2" alt="Website: openrosde.org"></a>
 </p>
 
 ---
@@ -34,7 +34,8 @@ npm run typecheck  # type-check the configuration and the pages
 | Path                   | Contents                                                                                |
 | ---------------------- | --------------------------------------------------------------------------------------- |
 | `src/pages/index.tsx`  | Homepage                                                                                |
-| `src/css/custom.css`   | Theme: colors and typography                                                            |
+| `src/css/sibling.css`  | Fonts, header, footer, hero, and cards, shared word for word with `openrois.org`        |
+| `src/css/custom.css`   | Palette of OpenRoSDE, taken from its logo                                               |
 | `docs/`                | Documentation, organized as Getting Started, Guides, Reference, and Project             |
 | `sidebars.ts`          | Documentation navigation                                                                |
 | `static/CNAME`         | Custom domain of GitHub Pages                                                           |

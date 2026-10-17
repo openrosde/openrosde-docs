@@ -1,5 +1,4 @@
 import type {ReactNode} from 'react';
-import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
@@ -215,16 +214,16 @@ function OrgIcon(): ReactNode {
 
 function HeroLinks(): ReactNode {
   return (
-    <div className={styles.heroLinks}>
-      <Link className={styles.heroLink} href={GITHUB_REPO}>
+    <div className="sibling-hero__links">
+      <Link className="sibling-hero__link" href={GITHUB_REPO}>
         <GitHubIcon />
         <span>OpenRoSDE on GitHub</span>
       </Link>
-      <Link className={styles.heroLink} href={PAPER_URL}>
+      <Link className="sibling-hero__link" href={PAPER_URL}>
         <PaperIcon />
         <span>Advanced Robotics Paper</span>
       </Link>
-      <Link className={styles.heroLink} to="/docs/platforms">
+      <Link className="sibling-hero__link" to="/docs/platforms">
         <OrgIcon />
         <span>Platforms & Devices</span>
       </Link>
@@ -235,53 +234,57 @@ function HeroLinks(): ReactNode {
 function Hero(): ReactNode {
   const logoUrl = useBaseUrl('/img/logo.svg');
   return (
-    <header className={styles.hero}>
-      <div className={clsx('container', styles.heroInner)}>
-        <div className={styles.heroText}>
-          <img className={styles.heroLogo} src={logoUrl} alt="OpenRoSDE logo" width={88} height={93} />
-          <div className={styles.eyebrow}>
-            <span className={styles.eyebrowItem}>Docker</span>
-            <span className={styles.eyebrowDot} />
-            <span className={styles.eyebrowItem}>ROS 1 & ROS 2</span>
-            <span className={styles.eyebrowDot} />
-            <span className={styles.eyebrowItem}>Apache-2.0</span>
+    <header className="sibling-hero">
+      <div className="container sibling-hero__inner">
+        <div className="sibling-hero__text">
+          <div className="sibling-hero__brand">
+            <img className="sibling-hero__logo" src={logoUrl} alt="OpenRoSDE logo" width={61} height={64} />
+            <div className="sibling-hero__eyebrow">
+              <span className="sibling-hero__eyebrow-item">Docker</span>
+              <span className="sibling-hero__eyebrow-dot" />
+              <span className="sibling-hero__eyebrow-item">ROS 1 & ROS 2</span>
+              <span className="sibling-hero__eyebrow-dot" />
+              <span className="sibling-hero__eyebrow-item">Apache-2.0</span>
+            </div>
           </div>
-          <Heading as="h1" className={styles.heroTitle}>
-            <span className={styles.gradient}>OpenRoSDE</span>: The Same Robotics Environment for
+          <Heading as="h1" className="sibling-hero__title">
+            <span className="sibling-hero__name">OpenRoSDE</span>: The Same Robotics Environment for
             Every Contributor
           </Heading>
-          <p className={styles.heroLead}>
+          <p className="sibling-hero__lead">
             OpenRoSDE, read "Open Robotic SDE", is the open-source Software Development Environment
             for collaborative research in robotic system integration. It containerizes ROS, Gazebo,
             RViz, FlexBE, and the drivers of each robot with Docker, so that every contributor works
             in the exact same software environment, in simulation or on the real robot.
           </p>
-          <div className={styles.heroButtons}>
-            <Link className={clsx('button button--primary button--lg', styles.cta)} to="/docs/getting-started/quick-start">
+          <div className="sibling-buttons">
+            <Link className="button button--primary button--lg sibling-cta" to="/docs/getting-started/quick-start">
               Get Started
             </Link>
-            <Link className={clsx('button button--secondary button--lg', styles.ctaSecondary)} to="/docs/intro">
+            <Link className="button button--secondary button--lg sibling-cta-secondary" to="/docs/intro">
               Documentation
             </Link>
           </div>
           <HeroLinks />
         </div>
-        <div className={styles.heroCode}>
-          <div className={styles.window}>
-            <div className={styles.windowBar}>
-              <span />
-              <span />
-              <span />
-              <em>Ubuntu development machine</em>
+        <div className="sibling-hero__media">
+          <figure className="sibling-hero__figure">
+            <div className="sibling-window">
+              <div className="sibling-window__bar">
+                <span />
+                <span />
+                <span />
+                <em>Ubuntu development machine</em>
+              </div>
+              <CodeBlock language="bash" className={styles.windowCode}>
+                {QUICK_START}
+              </CodeBlock>
             </div>
-            <CodeBlock language="bash" className={styles.windowCode}>
-              {QUICK_START}
-            </CodeBlock>
-          </div>
-          <p className={styles.heroCaption}>
-            From a fresh Ubuntu machine to a container of the TurtleBot3 platform.{' '}
-            <Link to="/docs/getting-started/quick-start">Follow the Quick Start →</Link>
-          </p>
+            <figcaption className="sibling-hero__caption">
+              From a fresh Ubuntu machine to a container of the TurtleBot3 platform.{' '}
+              <Link to="/docs/getting-started/quick-start">Follow the Quick Start →</Link>
+            </figcaption>
+          </figure>
         </div>
       </div>
     </header>
@@ -290,10 +293,10 @@ function Hero(): ReactNode {
 
 function Why(): ReactNode {
   return (
-    <section className={styles.section}>
+    <section className="sibling-section">
       <div className="container">
-        <div className={styles.sectionHead}>
-          <span className={styles.kicker}>Why OpenRoSDE</span>
+        <div className="sibling-section__head">
+          <span className="sibling-kicker">Why OpenRoSDE</span>
           <Heading as="h2">A Collaborative Research Workflow, Built on Containers</Heading>
           <p>
             OpenRoSDE is the open-source reference implementation of the Software Development
@@ -307,7 +310,7 @@ function Why(): ReactNode {
           {LAYERS.map((layer, index) => (
             <div key={layer.tag} className={styles.layerStep}>
               <div className={styles.layerCard}>
-                <span className={styles.tag}>{layer.tag}</span>
+                <span className="sibling-tag">{layer.tag}</span>
                 <code className={styles.layerName}>{layer.name}</code>
                 <p>{layer.body}</p>
               </div>
@@ -323,7 +326,7 @@ function Why(): ReactNode {
           Devices and extensions cloned into <code>extensions/</code> can add their own layers
           between Layers 2 and 3.
         </p>
-        <div className={styles.centerLink}>
+        <div className="sibling-center-link">
           <Link to="/docs/intro">Read the Overview →</Link>
         </div>
       </div>
@@ -333,19 +336,19 @@ function Why(): ReactNode {
 
 function Features(): ReactNode {
   return (
-    <section className={clsx(styles.section, styles.sectionAlt)}>
+    <section className="sibling-section sibling-section--alt">
       <div className="container">
-        <div className={styles.sectionHead}>
-          <span className={styles.kicker}>What OpenRoSDE Provides</span>
+        <div className="sibling-section__head">
+          <span className="sibling-kicker">What OpenRoSDE Provides</span>
           <Heading as="h2">From the First Container to the Real Robot</Heading>
         </div>
-        <div className={styles.featureGrid}>
+        <div className="sibling-card-grid">
           {FEATURES.map((f) => (
-            <Link key={f.title} to={f.to} className={styles.featureCard}>
-              <span className={styles.tag}>{f.tag}</span>
+            <Link key={f.title} to={f.to} className="sibling-card">
+              <span className="sibling-tag">{f.tag}</span>
               <Heading as="h3">{f.title}</Heading>
               <p>{f.body}</p>
-              <span className={styles.more}>Learn more →</span>
+              <span className="sibling-card__more">Learn more →</span>
             </Link>
           ))}
         </div>
@@ -370,10 +373,10 @@ function RepositoryGrid({items}: {items: Repository[]}): ReactNode {
 
 function Platforms(): ReactNode {
   return (
-    <section className={styles.section}>
+    <section className="sibling-section">
       <div className="container">
-        <div className={styles.sectionHead}>
-          <span className={styles.kicker}>Platforms & Devices</span>
+        <div className="sibling-section__head">
+          <span className="sibling-kicker">Platforms & Devices</span>
           <Heading as="h2">Six Robot Platforms & Three Devices, Each in Its Own Repository</Heading>
           <p>
             The core holds no platform. Each canonical platform and each public device lives in a
@@ -389,7 +392,7 @@ function Platforms(): ReactNode {
           Devices
         </Heading>
         <RepositoryGrid items={DEVICES} />
-        <div className={styles.centerLink}>
+        <div className="sibling-center-link">
           <Link to="/docs/platforms">See All Platforms & Devices →</Link>
         </div>
       </div>
@@ -399,24 +402,24 @@ function Platforms(): ReactNode {
 
 function Community(): ReactNode {
   return (
-    <section className={clsx(styles.section, styles.sectionAlt)}>
-      <div className={clsx('container', styles.communityGrid)}>
-        <div className={styles.communityCard}>
-          <span className={styles.kicker}>Get Involved</span>
+    <section className="sibling-section sibling-section--alt">
+      <div className="container sibling-community">
+        <div className="sibling-community__card">
+          <span className="sibling-kicker">Get Involved</span>
           <Heading as="h2">Bring Your Robot to OpenRoSDE</Heading>
           <p>
             OpenRoSDE is developed in the open under the Apache License 2.0 and maintained by
             Coarobo GK. The most common contribution is support for a new robot platform, which
             OpenRoSDE finds without any change to the core.
           </p>
-          <div className={styles.standards}>
+          <div className="sibling-chips">
             {STACK.map((s) => (
-              <span key={s} className={styles.chip}>
+              <span key={s} className="sibling-chip">
                 {s}
               </span>
             ))}
           </div>
-          <div className={styles.heroButtons}>
+          <div className="sibling-buttons">
             <Link className="button button--primary" href={GITHUB_REPO}>
               Contribute on GitHub
             </Link>
@@ -425,8 +428,8 @@ function Community(): ReactNode {
             </Link>
           </div>
         </div>
-        <div className={styles.communityCard}>
-          <span className={styles.kicker}>Cite OpenRoSDE</span>
+        <div className="sibling-community__card">
+          <span className="sibling-kicker">Cite OpenRoSDE</span>
           <Heading as="h3">Using OpenRoSDE in Your Research?</Heading>
           <p>
             Please cite the paper that describes the Software Development Environment, published in
