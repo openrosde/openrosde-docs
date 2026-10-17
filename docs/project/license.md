@@ -1,6 +1,6 @@
 ---
 sidebar_label: License
-sidebar_position: 4
+sidebar_position: 5
 description: The license of OpenRoSDE, of its versions before 3.0.0, and of the third-party software that its Docker images bundle.
 ---
 

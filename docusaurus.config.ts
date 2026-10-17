@@ -17,6 +17,10 @@ const SIBLING_URL = 'https://openrois.org/';
 const FIRST_YEAR = 2019;
 const CURRENT_YEAR = new Date().getFullYear();
 const COPYRIGHT_YEARS = CURRENT_YEAR > FIRST_YEAR ? `${FIRST_YEAR}-${CURRENT_YEAR}` : `${FIRST_YEAR}`;
+// A project of the family with its logo, for the Open Source dropdown and the footer.
+// static/img/openrois-logo.svg is a copy of static/img/logo.svg of openrois/openrois-docs.
+const projectWithLogo = (logo: string, name: string): string =>
+  `<span class="sibling-project"><img src="${logo}" alt="" width="20" height="20">${name}</span>`;
 
 const config: Config = {
   title: 'OpenRoSDE',
@@ -130,6 +134,7 @@ const config: Config = {
         {type: 'docSidebar', sidebarId: 'docsSidebar', position: 'left', label: 'Documentation'},
         {to: '/docs/getting-started/quick-start', label: 'Quick Start', position: 'left'},
         {to: '/docs/platforms', label: 'Platforms', position: 'left'},
+        {to: '/docs/project/roadmap', label: 'Roadmap', position: 'left'},
         {to: '/docs/project/contributing', label: 'Contributing', position: 'left'},
         {href: PAPER_URL, label: 'Paper', position: 'right'},
         {
@@ -137,8 +142,8 @@ const config: Config = {
           label: 'Open Source',
           position: 'right',
           items: [
-            {href: SIBLING_URL, label: 'OpenRoIS'},
-            {to: '/', label: 'OpenRoSDE', activeBaseRegex: '^/'},
+            {href: SIBLING_URL, html: projectWithLogo('/img/openrois-logo.svg', 'OpenRoIS')},
+            {to: '/', html: projectWithLogo('/img/logo.svg', 'OpenRoSDE'), activeBaseRegex: '^/'},
             {href: COAROBO_URL, label: 'Led by Coarobo GK', className: 'sibling-dropdown-lead'},
           ],
         },
@@ -156,8 +161,8 @@ const config: Config = {
         alt: 'OpenRoSDE logo',
         src: 'img/logo.svg',
         href: '/',
-        width: 38,
-        height: 40,
+        width: 61,
+        height: 64,
       },
       links: [
         {
@@ -165,14 +170,14 @@ const config: Config = {
           items: [
             {label: 'Introduction', to: '/docs/intro'},
             {label: 'Quick Start', to: '/docs/getting-started/quick-start'},
-            {label: 'Basic Usage', to: '/docs/getting-started/basic-usage'},
+            {label: 'Platforms & Devices', to: '/docs/platforms'},
             {label: 'Extensions', to: '/docs/guides/extensions'},
           ],
         },
         {
           title: 'Project',
           items: [
-            {label: 'Platforms & Devices', to: '/docs/platforms'},
+            {label: 'Roadmap', to: '/docs/project/roadmap'},
             {label: 'Contributing', to: '/docs/project/contributing'},
             {label: 'Citing OpenRoSDE', to: '/docs/project/citing'},
             {label: 'License', to: '/docs/project/license'},
@@ -181,7 +186,7 @@ const config: Config = {
         {
           title: 'Community',
           items: [
-            {label: 'OpenRoSDE GitHub Organization', href: GITHUB_ORG},
+            {label: 'GitHub Organization', href: GITHUB_ORG},
             {label: 'Issues', href: `${GITHUB_REPO}/issues`},
             {label: 'Advanced Robotics Paper', href: PAPER_URL},
           ],
@@ -189,7 +194,9 @@ const config: Config = {
         {
           title: 'Open Source',
           items: [
-            {label: 'OpenRoIS', href: SIBLING_URL},
+            {
+              html: `<a class="footer__link-item" href="${SIBLING_URL}" target="_blank" rel="noopener noreferrer">${projectWithLogo('/img/openrois-logo.svg', 'OpenRoIS')}</a>`,
+            },
             {label: 'Led by Coarobo GK', href: COAROBO_URL},
           ],
         },

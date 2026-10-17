@@ -28,6 +28,8 @@
   --sibling-primary-rgb: 94, 95, 194;
   --sibling-accent: #729fff;
   --sibling-accent-rgb: 114, 159, 255;
+  --sibling-brand-gradient: linear-gradient(90deg, #5e5fc2 0%, #729fff 55%, #99c5ff 100%);
+  --sibling-brand-rgb: 94, 95, 194;
   --sibling-hero-gradient: linear-gradient(90deg, #5e5fc2 0%, #5d74dc 55%, #5d8bf5 100%);
   --sibling-announcement-background: linear-gradient(90deg, #2e2f73, #5e5fc2);
 

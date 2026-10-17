@@ -1,6 +1,6 @@
 ---
 sidebar_label: Citing OpenRoSDE
-sidebar_position: 2
+sidebar_position: 3
 description: How to cite OpenRoSDE in academic work, and the publications that describe its history, requirements, vision, and goals.
 ---
 
