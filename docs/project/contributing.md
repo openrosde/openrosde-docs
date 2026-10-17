@@ -1,6 +1,6 @@
 ---
 sidebar_label: Contributing
-sidebar_position: 1
+sidebar_position: 2
 description: How to contribute to OpenRoSDE, from reporting issues to adding support for a new robot platform.
 ---
 

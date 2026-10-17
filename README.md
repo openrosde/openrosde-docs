@@ -9,7 +9,7 @@
   <a href="https://docusaurus.io/"><img src="https://img.shields.io/badge/Docusaurus-3.10.1-3ECC5F?logo=docusaurus&logoColor=white" alt="Docusaurus 3.10.1"></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-%E2%89%A520-5FA04E?logo=nodedotjs&logoColor=white" alt="Node.js 20 or later"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-2E5C8A" alt="License: Apache-2.0"></a>
-  <a href="https://openrosde.org/"><img src="https://img.shields.io/badge/website-openrosde.org-4F46E5" alt="Website: openrosde.org"></a>
+  <a href="https://openrosde.org/"><img src="https://img.shields.io/badge/website-openrosde.org-5E5FC2" alt="Website: openrosde.org"></a>
 </p>
 
 ---
@@ -31,15 +31,18 @@ npm run typecheck  # type-check the configuration and the pages
 
 ## 📁 Structure
 
-| Path                   | Contents                                                                                |
-| ---------------------- | --------------------------------------------------------------------------------------- |
-| `src/pages/index.tsx`  | Homepage                                                                                |
-| `src/css/custom.css`   | Theme: colors and typography                                                            |
-| `docs/`                | Documentation, organized as Getting Started, Guides, Reference, and Project             |
-| `sidebars.ts`          | Documentation navigation                                                                |
-| `static/CNAME`         | Custom domain of GitHub Pages                                                           |
-| `docusaurus.config.ts` | Site configuration                                                                      |
-| `.github/workflows/`   | `deploy.yml` builds and deploys `main`, and `test-deploy.yml` builds every pull request |
+| Path                                | Contents                                                                                       |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `src/pages/index.tsx`               | Homepage                                                                                       |
+| `src/css/sibling.css`               | Fonts, header, footer, hero, cards, and status pills, shared word for word with `openrois.org` |
+| `src/theme/Footer/Layout/index.tsx` | Layout of the footer, shared word for word with `openrois.org`                                 |
+| `src/css/custom.css`                | Palette of OpenRoSDE, taken from its logo                                                      |
+| `docs/`                             | Documentation, organized as Getting Started, Guides, Reference, and Project                    |
+| `sidebars.ts`                       | Documentation navigation                                                                       |
+| `static/img/`                       | Logo, the logo of OpenRoIS for the links to it, favicons, and social card                      |
+| `static/CNAME`                      | Custom domain of GitHub Pages                                                                  |
+| `docusaurus.config.ts`              | Site configuration                                                                             |
+| `.github/workflows/`                | `deploy.yml` builds and deploys `main`, and `test-deploy.yml` builds every pull request        |
 
 ## 🚀 Deployment
 
@@ -58,6 +61,8 @@ The settings of the repository must select GitHub Actions as the source of GitHu
 - Avoid em dashes, en dashes, and semicolons in prose.
 - Use Docusaurus admonitions such as `:::note` in `docs/`, since a GitHub alert such as `> [!NOTE]` shows as a plain quote on the site.
 - Keep `static/img/logo.svg` a copy of `profile/assets/openrosde-logo.svg` of [https://github.com/openrosde/.github](https://github.com/openrosde/.github), which holds the source of the logo.
+- Keep `static/img/openrois-logo.svg` a copy of `static/img/logo.svg` of [https://github.com/openrois/openrois-docs](https://github.com/openrois/openrois-docs).
+- Change `src/css/sibling.css` and `src/theme/Footer/Layout/index.tsx` in the same way in [https://github.com/openrois/openrois-docs](https://github.com/openrois/openrois-docs), which shares them word for word.
 
 ## ⚖️ License
 

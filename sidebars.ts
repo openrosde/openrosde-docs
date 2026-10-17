@@ -33,7 +33,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Project',
       collapsed: false,
-      items: ['project/contributing', 'project/citing', 'project/authors', 'project/license'],
+      items: ['project/roadmap', 'project/contributing', 'project/citing', 'project/authors', 'project/license'],
     },
   ],
 };

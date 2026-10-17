@@ -10,6 +10,21 @@ const GITHUB_REPO = 'https://github.com/openrosde/openrosde';
 // Keep in sync with src/pages/index.tsx.
 const PAPER_URL = 'https://doi.org/10.1080/01691864.2022.2068353';
 const COAROBO_URL = 'https://coarobo.com/';
+// The sibling site, which shares src/css/sibling.css and the layout of the
+// header, the hero, and the footer with this one.
+const SIBLING_URL = 'https://openrois.org/';
+// The first year of OpenRoSDE, which starts the copyright line of the footer.
+const FIRST_YEAR = 2019;
+const CURRENT_YEAR = new Date().getFullYear();
+const COPYRIGHT_YEARS = CURRENT_YEAR > FIRST_YEAR ? `${FIRST_YEAR}-${CURRENT_YEAR}` : `${FIRST_YEAR}`;
+// A project of the family with its number and its logo, for the Open Source dropdown and the footer.
+// The numbers are those of coarobo.com, OpenRoSDE first since it came first, then OpenRoIS.
+// static/img/openrois-logo.svg is a copy of static/img/logo.svg of openrois/openrois-docs.
+const familyProject = (slug: string, number: string, logo: string, name: string): string =>
+  `<span class="sibling-project"><span class="sibling-number sibling-number--${slug}">${number}</span>` +
+  `<img src="${logo}" alt="" width="20" height="20">${name}</span>`;
+const OPENROSDE = familyProject('openrosde', '01', '/img/logo.svg', 'OpenRoSDE');
+const OPENROIS = familyProject('openrois', '02', '/img/openrois-logo.svg', 'OpenRoIS');
 
 const config: Config = {
   title: 'OpenRoSDE',
@@ -88,11 +103,17 @@ const config: Config = {
         },
         blog: false,
         theme: {
-          customCss: './src/css/custom.css',
+          // sibling.css is shared word for word with openrois.org, and custom.css holds the palette of OpenRoSDE.
+          customCss: ['./src/css/sibling.css', './src/css/custom.css'],
         },
       } satisfies Preset.Options,
     ],
   ],
+
+  // The place of the site in the family, which the shared footer shows beside its name.
+  customFields: {
+    sibling: {slug: 'openrosde', number: '01'},
+  },
 
   themeConfig: {
     metadata: [
@@ -122,8 +143,19 @@ const config: Config = {
         {type: 'docSidebar', sidebarId: 'docsSidebar', position: 'left', label: 'Documentation'},
         {to: '/docs/getting-started/quick-start', label: 'Quick Start', position: 'left'},
         {to: '/docs/platforms', label: 'Platforms', position: 'left'},
+        {to: '/docs/project/roadmap', label: 'Roadmap', position: 'left'},
         {to: '/docs/project/contributing', label: 'Contributing', position: 'left'},
         {href: PAPER_URL, label: 'Paper', position: 'right'},
+        {
+          type: 'dropdown',
+          label: 'Open Source',
+          position: 'right',
+          items: [
+            {to: '/', html: OPENROSDE, activeBaseRegex: '^/'},
+            {href: SIBLING_URL, html: OPENROIS},
+            {href: COAROBO_URL, label: 'Led by Coarobo GK', className: 'sibling-dropdown-lead'},
+          ],
+        },
         {
           href: GITHUB_REPO,
           position: 'right',
@@ -137,9 +169,9 @@ const config: Config = {
       logo: {
         alt: 'OpenRoSDE logo',
         src: 'img/logo.svg',
-        href: 'https://openrosde.org',
-        width: 48,
-        height: 48,
+        href: '/',
+        width: 61,
+        height: 64,
       },
       links: [
         {
@@ -147,14 +179,14 @@ const config: Config = {
           items: [
             {label: 'Introduction', to: '/docs/intro'},
             {label: 'Quick Start', to: '/docs/getting-started/quick-start'},
-            {label: 'Basic Usage', to: '/docs/getting-started/basic-usage'},
+            {label: 'Platforms & Devices', to: '/docs/platforms'},
             {label: 'Extensions', to: '/docs/guides/extensions'},
           ],
         },
         {
           title: 'Project',
           items: [
-            {label: 'Platforms & Devices', to: '/docs/platforms'},
+            {label: 'Roadmap', to: '/docs/project/roadmap'},
             {label: 'Contributing', to: '/docs/project/contributing'},
             {label: 'Citing OpenRoSDE', to: '/docs/project/citing'},
             {label: 'License', to: '/docs/project/license'},
@@ -163,14 +195,26 @@ const config: Config = {
         {
           title: 'Community',
           items: [
-            {label: 'OpenRoSDE GitHub Organization', href: GITHUB_ORG},
+            {label: 'GitHub Organization', href: GITHUB_ORG},
             {label: 'Issues', href: `${GITHUB_REPO}/issues`},
             {label: 'Advanced Robotics Paper', href: PAPER_URL},
-            {label: 'Coarobo GK', href: COAROBO_URL},
+          ],
+        },
+        {
+          title: 'Open Source',
+          items: [
+            {html: `<a class="footer__link-item" href="/">${OPENROSDE}</a>`},
+            {
+              html: `<a class="footer__link-item" href="${SIBLING_URL}" target="_blank" rel="noopener noreferrer">${OPENROIS}</a>`,
+            },
+            {label: 'Led by Coarobo GK', href: COAROBO_URL},
           ],
         },
       ],
-      copyright: `Copyright © 2019 Coarobo GK. Developed by Coarobo GK and the OpenRoSDE community under the Apache License 2.0.`,
+      copyright: [
+        `© ${COPYRIGHT_YEARS} Coarobo GK and the OpenRoSDE community.`,
+        'Licensed under the Apache License 2.0.',
+      ].join('<br>'),
     },
     prism: {
       theme: prismThemes.github,

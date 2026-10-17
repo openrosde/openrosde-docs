@@ -1,6 +1,6 @@
 ---
 sidebar_label: Authors & Acknowledgment
-sidebar_position: 3
+sidebar_position: 4
 description: The maintainers, the authors, and the contributors of OpenRoSDE.
 ---
 
